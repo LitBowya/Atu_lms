@@ -357,7 +357,7 @@ include '../header.php';
 							<td>'.$row["category_updated_on"].'</td>
 							<td>
 								<a href="category.php?action=edit&code='.convert_data($row["category_id"]).'" class="btn btn-sm btn-primary">Edit</a>
-								<button name="delete_button" class="btn btn-danger btn-sm" onclick="delete_data(`'.$row["category_id"].'`, `'.$row["category_status"].'`)">Delete</button>
+								<button name="delete_button" class="btn btn-danger btn-sm" onclick="delete_data(`'.$row["category_id"].'`, `'.$row["category_status"]. '`)">Disable</button>
 							</td>
 						</tr>
 						';

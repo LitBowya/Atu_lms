@@ -34,10 +34,6 @@ if (isset($_POST["register_button"])) {
 		// Hash the password before storing
 		$formdata['user_password'] = password_hash(trim($_POST['user_password']), PASSWORD_DEFAULT);
 
-		// Debugging: Output the plain and hashed password
-		$plain_password = trim($_POST['user_password']);
-		echo 'Plain Password: ' . $plain_password . '<br>';
-		echo 'Hashed Password: ' . $formdata['user_password'] . '<br>';
 	}
 
 
@@ -61,10 +57,38 @@ if (isset($_POST["register_button"])) {
 
 	// Image validation (assuming the rest of the logic is handled elsewhere)
 	if (!empty($_FILES['user_profile']['name'])) {
-		// Assuming the image processing code exists here
-		$formdata['user_profile'] = 'processed_image_name.jpg'; // Placeholder for actual image name
+		$fileName = $_FILES['user_profile']['name'];
+		$fileTmpName = $_FILES['user_profile']['tmp_name'];
+		$fileSize = $_FILES['user_profile']['size'];
+		$fileError = $_FILES['user_profile']['error'];
+		$fileType = $_FILES['user_profile']['type'];
+
+		if ($fileError === 0) {
+			$allowed = ['jpg', 'jpeg', 'png'];
+			$fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+			if (in_array($fileExt, $allowed)) {
+				if ($fileSize <= 2 * 1024 * 1024
+				) {
+					$fileNewName = uniqid('', true) . '.' . $fileExt;
+					$fileDestination = 'upload/' . $fileNewName;
+
+					if (move_uploaded_file($fileTmpName, $fileDestination)) {
+						$formdata['user_profile'] = $fileNewName;
+					} else {
+						$message .= '<li>Failed to move uploaded file</li>';
+					}
+				} else {
+					$message .= '<li>File size must be less than 2MB</li>';
+				}
+			} else {
+				$message .= '<li>Invalid file type. Only .jpg & .png images allowed</li>';
+			}
+		} else {
+			$message .= '<li>Error uploading file</li>';
+		}
 	} else {
-		$message .= '<li>Please Select Profile Image</li>';
+		$message .= '<li>Please select a profile image</li>';
 	}
 
 	if ($message == '') {
@@ -96,6 +120,7 @@ if (isset($_POST["register_button"])) {
 			$statement->execute($data);
 
 			$success = 'Registration Successful! You can now log in.';
+			header('Location: user_login.php');
 		}
 	}
 }

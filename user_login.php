@@ -25,7 +25,11 @@ if (isset($_POST["login_button"])) {
 		$formdata['user_password'] = trim($_POST['user_password']);
 	}
 
+
+	$message = '';
+
 	if ($message == '') {
+		// Prepare and execute the query to check for the user
 		$data = [':student_id' => $formdata['student_id']];
 		$query = "SELECT * FROM lms_user WHERE student_id = :student_id";
 		$statement = $connect->prepare($query);
@@ -34,25 +38,27 @@ if (isset($_POST["login_button"])) {
 		if ($statement->rowCount() > 0) {
 			$row = $statement->fetch(PDO::FETCH_ASSOC);
 
-			// Debugging: Output the entered password and stored hash
-			echo 'Entered Password: ' . $formdata['user_password'] . '<br>';
-			echo 'Stored Hash: ' . $row['user_password'] . '<br>';
-
-			// Use password_verify to check the entered password against the hashed password
-			if (password_verify($formdata['user_password'], $row['user_password'])) {
-				session_start();
-				$_SESSION['user_id'] = $row['student_id'];
-				header('location:issue_book_details.php');
-				exit;
+			// Check if user status is 'Disable'
+			if ($row['user_status'] == 'Disable') {
+				$message = '<li>User is not active</li>';
 			} else {
-				$message = '<li>Wrong password</li>';
+				// User is active, check the password
+				if (password_verify($formdata['user_password'], $row['user_password'])) {
+					// Password is correct, start session and redirect
+					session_start();
+					$_SESSION['user_id'] = $row['student_id'];
+					header('location:issue_book_details.php');
+					exit;
+				} else {
+					$message = '<li>Wrong password</li>';
+				}
 			}
 		} else {
-			$message = '<li>Student ID not found</li>';
+			$message = '<li>Invalid student ID or password</li>';
 		}
-
 	}
 }
+
 
 include 'header.php';
 ?>
