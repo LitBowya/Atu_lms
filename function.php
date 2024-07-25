@@ -99,13 +99,13 @@ function get_book_issue_limit_per_user($connect)
 	return $output;
 }
 
-function get_total_book_issue_per_user($connect, $user_unique_id)
+function get_total_book_issue_per_user($connect, $student_id)
 {
 	$output = 0;
 
 	$query = "
 	SELECT COUNT(issue_book_id) AS Total FROM lms_issue_book 
-	WHERE user_id = '".$user_unique_id."' 
+	WHERE student_id = '".$student_id."' 
 	AND book_issue_status = 'Issue'
 	";
 
@@ -1374,4 +1374,22 @@ function Count_total_location_rack_number($connect)
 	return $total;
 }
 
-?>
+// Function to get book name by book ID
+function get_book_name_by_id($connect, $book_id)
+{
+	$query = "SELECT book_name FROM lms_book WHERE book_id = :book_id";
+	$statement = $connect->prepare($query);
+	$statement->execute([':book_id' => $book_id]);
+	$result = $statement->fetch();
+	return $result ? $result['book_name'] : 'Not Found';
+}
+
+// Function to get student name by ID
+function get_student_name_by_id($connect, $student_id)
+{
+	$query = "SELECT student_name FROM lms_user WHERE student_id = :student_id";
+	$statement = $connect->prepare($query);
+	$statement->execute([':student_id' => $student_id]);
+	$result = $statement->fetch();
+	return $result ? $result['student_name'] : 'Not Found';
+}
