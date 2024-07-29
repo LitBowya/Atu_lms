@@ -46,7 +46,6 @@ include 'header.php';
 				<thead>
 					<tr>
 						<th>Book Name</th>
-						<th>ISBN No.</th>
 						<th>Category</th>
 						<th>Author</th>
 						<th>Location Rack</th>
@@ -58,7 +57,6 @@ include 'header.php';
 				<tfoot>
 					<tr>
 						<th>Book Name</th>
-						<th>ISBN No.</th>
 						<th>Category</th>
 						<th>Author</th>
 						<th>Location Rack</th>
@@ -86,7 +84,6 @@ include 'header.php';
 						echo '
 							<tr>
 								<td>'.$row["book_name"].'</td>
-								<td>'.$row["book_isbn_number"].'</td>
 								<td>'.$row["book_category"].'</td>
 								<td>'.$row["book_author"].'</td>
 								<td>'.$row["book_location_rack"].'</td>
@@ -113,8 +110,3 @@ include 'header.php';
 	</div>
 </div>
 
-<?php 
-
-include 'footer.php';
-
-?>

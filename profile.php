@@ -1,7 +1,5 @@
 <?php
-
-//profile.php
-
+// profile.php
 include 'database_connection.php';
 include 'function.php';
 
@@ -14,9 +12,8 @@ $message = '';
 $success = '';
 
 if (isset($_POST['save_button'])) {
-	$formdata = array();
+	$formdata = [];
 
-	// Validate Email Address
 	if (empty($_POST['user_email_address'])) {
 		$message .= '<li>Email Address is required</li>';
 	} else {
@@ -27,21 +24,18 @@ if (isset($_POST['save_button'])) {
 		}
 	}
 
-	// Validate User Name
 	if (empty($_POST['user_name'])) {
 		$message .= '<li>User Name is required</li>';
 	} else {
 		$formdata['user_name'] = trim($_POST['user_name']);
 	}
 
-	// Validate User Address
 	if (empty($_POST['user_address'])) {
 		$message .= '<li>User Address Detail is required</li>';
 	} else {
 		$formdata['user_address'] = trim($_POST['user_address']);
 	}
 
-	// Validate User Contact No.
 	if (empty($_POST['user_contact_no'])) {
 		$message .= '<li>User Contact No is required</li>';
 	} else {
@@ -50,7 +44,6 @@ if (isset($_POST['save_button'])) {
 
 	$formdata['user_profile'] = $_POST['hidden_user_profile'];
 
-	// Handle Profile Image Upload
 	if (!empty($_FILES['user_profile']['name'])) {
 		$img_name = $_FILES['user_profile']['name'];
 		$img_type = $_FILES['user_profile']['type'];
@@ -109,7 +102,6 @@ if (isset($_POST['save_button'])) {
 	}
 }
 
-// Fetch user data
 $query = "
     SELECT * FROM lms_user 
     WHERE student_id = :student_id
@@ -117,67 +109,111 @@ $query = "
 
 $statement = $connect->prepare($query);
 $statement->execute([':student_id' => $_SESSION['user_id']]);
-$result = $statement->fetchAll(PDO::FETCH_ASSOC);
+$result = $statement->fetch(PDO::FETCH_ASSOC);
 
 include 'header.php';
-
 ?>
 
-<div class="d-flex align-items-center justify-content-center mt-5 mb-5" style="min-height:700px;">
-	<div class="col-md-6">
-		<?php
-		if ($message != '') {
-			echo '<div class="alert alert-danger"><ul>' . $message . '</ul></div>';
-		}
+<div class="d-flex align-items-center justify-content-center mt-5 mb-5">
+	<div class="col-md-8">
+		<?php if ($message != '') { ?>
+			<div class="alert alert-danger">
+				<ul><?php echo $message; ?></ul>
+			</div>
+		<?php } ?>
+		<?php if ($success != '') { ?>
+			<div class="alert alert-success"><?php echo $success; ?></div>
+		<?php } ?>
 
-		if ($success != '') {
-			echo '<div class="alert alert-success">' . $success . '</div>';
-		}
-		?>
 		<div class="card">
-			<div class="card-header">Profile</div>
+			<div class="card-header">
+				<ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="view-profile-tab" data-toggle="tab" href="#view-profile" role="tab" aria-controls="view-profile" aria-selected="true">View Profile</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="edit-profile-tab" data-toggle="tab" href="#edit-profile" role="tab" aria-controls="edit-profile" aria-selected="false">Edit Profile</a>
+					</li>
+				</ul>
+			</div>
 			<div class="card-body">
-				<?php
-				foreach ($result as $row) {
-				?>
-					<form method="POST" enctype="multipart/form-data">
-						<div class="mb-3">
-							<label class="form-label">Email Address</label>
-							<input type="text" name="user_email_address" id="user_email_address" class="form-control" value="<?php echo htmlspecialchars($row['user_email_address']); ?>" />
+				<div class="tab-content" id="profileTabsContent">
+					<div class="tab-pane fade show active" id="view-profile" role="tabpanel" aria-labelledby="view-profile-tab">
+						<div class="row">
+							<div class="col-md-4 text-center">
+								<?php if ($result['user_profile']) { ?>
+									<img src="upload/<?php echo htmlspecialchars($result['user_profile']); ?>" class="img-fluid rounded-circle mb-3" alt="User Photo" style="width: 150px; height: 150px;">
+								<?php } else { ?>
+									<img src="path/to/default/image.png" class="img-fluid rounded-circle mb-3" alt="User Photo" style="width: 150px; height: 150px;">
+								<?php } ?>
+							</div>
+							<div class="col-md-8">
+								<h4><?php echo htmlspecialchars($result['user_name']); ?></h4>
+								<p>Email: <?php echo htmlspecialchars($result['user_email_address']); ?></p>
+								<p>Contact No: <?php echo htmlspecialchars($result['user_contact_no']); ?></p>
+								<p>Address: <?php echo nl2br(htmlspecialchars($result['user_address'])); ?></p>
+							</div>
 						</div>
-						<div class="mb-3">
-							<label class="form-label">User Name</label>
-							<input type="text" name="user_name" id="user_name" class="form-control" value="<?php echo htmlspecialchars($row['user_name']); ?>" />
-						</div>
-						<div class="mb-3">
-							<label class="form-label">User Contact No.</label>
-							<input type="text" name="user_contact_no" id="user_contact_no" class="form-control" value="<?php echo htmlspecialchars($row['user_contact_no']); ?>" />
-						</div>
-						<div class="mb-3">
-							<label class="form-label">User Address</label>
-							<textarea name="user_address" id="user_address" class="form-control"><?php echo htmlspecialchars($row['user_address']); ?></textarea>
-						</div>
-						<div class="mb-3">
-							<label class="form-label">User Photo</label><br />
-							<input type="file" name="user_profile" id="user_profile" />
-							<br />
-							<span class="text-muted">Only .jpg & .png image allowed. Image size must be 225 x 225</span>
-							<br />
-							<input type="hidden" name="hidden_user_profile" value="<?php echo htmlspecialchars($row['user_profile']); ?>" />
-							<?php if ($row['user_profile']) { ?>
-								<img src="upload/<?php echo htmlspecialchars($row['user_profile']); ?>" width="100" class="img-thumbnail" />
-							<?php } ?>
-						</div>
-						<div class="text-center mt-4 mb-2">
-							<input type="submit" name="save_button" class="btn btn-primary" value="Save" />
-						</div>
-					</form>
-				<?php
-				}
-				?>
+					</div>
+					<div class="tab-pane fade" id="edit-profile" role="tabpanel" aria-labelledby="edit-profile-tab">
+						<form method="POST" enctype="multipart/form-data">
+							<div class="mb-3">
+								<label class="form-label">Email Address</label>
+								<input type="text" name="user_email_address" id="user_email_address" class="form-control" value="<?php echo htmlspecialchars($result['user_email_address']); ?>" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">User Name</label>
+								<input type="text" name="user_name" id="user_name" class="form-control" value="<?php echo htmlspecialchars($result['user_name']); ?>" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">User Contact No.</label>
+								<input type="text" name="user_contact_no" id="user_contact_no" class="form-control" value="<?php echo htmlspecialchars($result['user_contact_no']); ?>" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">User Address</label>
+								<textarea name="user_address" id="user_address" class="form-control"><?php echo htmlspecialchars($result['user_address']); ?></textarea>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">User Photo</label><br />
+								<input type="file" name="user_profile" id="user_profile" />
+								<br />
+								<span class="text-muted">Only .jpg & .png image allowed. Image size must be 225 x 225</span>
+								<br />
+								<input type="hidden" name="hidden_user_profile" value="<?php echo htmlspecialchars($result['user_profile']); ?>" />
+								<?php if ($result['user_profile']) { ?>
+									<img src="upload/<?php echo htmlspecialchars($result['user_profile']); ?>" width="100" class="img-thumbnail" />
+								<?php } ?>
+							</div>
+							<div class="text-center mt-4 mb-2">
+								<input type="submit" name="save_button" class="btn btn-primary" value="Save" />
+							</div>
+						</form>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
-<?php include 'footer.php'; ?>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const tabs = document.querySelectorAll('#profileTabs a');
+		const tabContents = document.querySelectorAll('.tab-pane');
+
+		function showTab(event) {
+			event.preventDefault();
+			const targetId = this.getAttribute('href').substring(1);
+
+			// Remove active class from all tabs and tab content
+			tabs.forEach(tab => tab.classList.remove('active'));
+			tabContents.forEach(content => content.classList.remove('show', 'active'));
+
+			// Add active class to the clicked tab and corresponding content
+			this.classList.add('active');
+			document.getElementById(targetId).classList.add('show', 'active');
+		}
+
+		// Add click event listeners to all tabs
+		tabs.forEach(tab => tab.addEventListener('click', showTab));
+	});
+</script>

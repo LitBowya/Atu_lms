@@ -1,7 +1,7 @@
 <?php
 
-include 'database_connection.php';
-include 'function.php';
+include '../database_connection.php';
+include '../function.php';
 
 $message = '';
 $success = '';
@@ -107,11 +107,11 @@ if (isset($_POST["register_button"])) {
     }
 }
 
-include 'header.php';
+include '../header.php';
 ?>
 
 <!-- HTML code for form display -->
-<div class="d-flex align-items-center justify-content-center mt-5 mb-5" style="min-height:700px;">
+<div class="d-flex align-items-center justify-content-center" style="min-height:700px;">
     <div class="col-md-6">
         <?php
         if ($message != '') {
@@ -156,4 +156,4 @@ include 'header.php';
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include '../footer.php'; ?>
