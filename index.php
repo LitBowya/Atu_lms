@@ -39,7 +39,7 @@ include 'header.php';
 
 				<h2>Admin</h2>
 				<p></p>
-				<a href="admin_login.php" class="btn btn-outline-light">
+				<a href="./admin_login.php" class="btn btn-outline-light">
 					<i class="fa-solid fa-user-tie"></i>
 				</a>
 
