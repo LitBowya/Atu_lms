@@ -77,6 +77,15 @@
         .fa-solid {
             font-size: 35px;
         }
+
+        .sb-sidenav-dark {
+            background-color: rgb(28, 74, 126);
+
+        }
+
+        .nav-link {
+            color: white;
+        }
     </style>
 </head>
 
