@@ -10,7 +10,7 @@ if (!is_user_login()) {
 }
 
 $query = "
-    SELECT lms_issue_book.*, lms_book.book_name, lms_book.book_author 
+    SELECT lms_issue_book.*, lms_book.book_name, lms_book.book_author, lms_book.book_code
     FROM lms_issue_book 
     INNER JOIN lms_book 
     ON lms_book.book_id = lms_issue_book.book_id 
@@ -38,6 +38,7 @@ include 'header.php';
 			<table id="datatablesSimple">
 				<thead>
 					<tr>
+						<th>Book Code</th>
 						<th>Book Name</th>
 						<th>Book Author</th>
 						<th>Issue Date</th>
@@ -48,6 +49,7 @@ include 'header.php';
 				</thead>
 				<tfoot>
 					<tr>
+						<th>Book Code</th>
 						<th>Book Name</th>
 						<th>Book Author</th>
 						<th>Issue Date</th>
@@ -71,6 +73,7 @@ include 'header.php';
 
 							echo '
                         <tr>
+                            <td>' . $row["book_code"] . '</td>
                             <td>' . $row["book_name"] . '</td>
                             <td>' . $row["book_author"] . '</td>
                             <td>' . $row["issue_date_time"] . '</td>

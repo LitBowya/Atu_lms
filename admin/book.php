@@ -3,17 +3,25 @@
 //book.php
 
 include '../database_connection.php';
-
 include '../function.php';
-
 
 if (!is_admin_login()) {
 	header('location:../admin_login.php');
 }
 
 $message = '';
-
 $error = '';
+
+// Function to generate a new book code
+function generate_book_code($connect)
+{
+	$query = "SELECT MAX(book_id) as last_id FROM lms_book";
+	$statement = $connect->prepare($query);
+	$statement->execute();
+	$result = $statement->fetch(PDO::FETCH_ASSOC);
+	$last_id = $result ? $result['last_id'] + 1 : 1;
+	return "ATUNo" . str_pad($last_id, 6, '0', STR_PAD_LEFT);
+}
 
 if (isset($_POST["add_book"])) {
 	$formdata = array();
@@ -42,7 +50,6 @@ if (isset($_POST["add_book"])) {
 		$formdata['book_location_rack'] = trim($_POST["book_location_rack"]);
 	}
 
-	
 	if (empty($_POST["book_no_of_copy"])) {
 		$error .= '<li>Book No. of Copy is required</li>';
 	} else {
@@ -50,6 +57,7 @@ if (isset($_POST["add_book"])) {
 	}
 
 	if ($error == '') {
+		$formdata['book_code'] = generate_book_code($connect);
 		$data = array(
 			':book_category'		=>	$formdata['book_category'],
 			':book_author'			=>	$formdata['book_author'],
@@ -57,17 +65,17 @@ if (isset($_POST["add_book"])) {
 			':book_name'			=>	$formdata['book_name'],
 			':book_no_of_copy'		=>	$formdata['book_no_of_copy'],
 			':book_status'			=>	'Enable',
-			':book_added_on'		=>	get_date_time($connect)
+			':book_added_on'		=>	get_date_time($connect),
+			':book_code'            =>  $formdata['book_code']
 		);
 
 		$query = "
 		INSERT INTO lms_book 
-        (book_category, book_author, book_location_rack, book_name, book_no_of_copy, book_status, book_added_on) 
-        VALUES (:book_category, :book_author, :book_location_rack, :book_name, :book_no_of_copy, :book_status, :book_added_on)
+        (book_category, book_author, book_location_rack, book_name, book_no_of_copy, book_status, book_added_on, book_code) 
+        VALUES (:book_category, :book_author, :book_location_rack, :book_name, :book_no_of_copy, :book_status, :book_added_on, :book_code)
 		";
 
 		$statement = $connect->prepare($query);
-
 		$statement->execute($data);
 
 		header('location:book.php?msg=add');
@@ -129,7 +137,6 @@ if (isset($_POST["edit_book"])) {
 		";
 
 		$statement = $connect->prepare($query);
-
 		$statement->execute($data);
 
 		header('location:book.php?msg=edit');
@@ -154,12 +161,10 @@ if (isset($_GET["action"], $_GET["code"], $_GET["status"]) && $_GET["action"] ==
 	";
 
 	$statement = $connect->prepare($query);
-
 	$statement->execute($data);
 
 	header('location:book.php?msg=' . strtolower($status) . '');
 }
-
 
 $query = "
 	SELECT * FROM lms_book 
@@ -167,9 +172,7 @@ $query = "
 ";
 
 $statement = $connect->prepare($query);
-
 $statement->execute();
-
 
 include '../header.php';
 
@@ -382,10 +385,12 @@ include '../header.php';
 							<th>Created On</th>
 							<th>Updated On</th>
 							<th>Action</th>
+							<th>Book Code</th>
 						</tr>
 					</thead>
 					<tfoot>
 						<tr>
+							<th>Book Code</th>
 							<th>Book Name</th>
 							<th>Category</th>
 							<th>Author</th>
@@ -395,6 +400,7 @@ include '../header.php';
 							<th>Created On</th>
 							<th>Updated On</th>
 							<th>Action</th>
+
 						</tr>
 					</tfoot>
 					<tbody>
@@ -410,6 +416,7 @@ include '../header.php';
 								}
 								echo '
         				<tr>
+							<td>' . $row["book_code"] . '</td>
         					<td>' . $row["book_name"] . '</td>
         					<td>' . $row["book_category"] . '</td>
         					<td>' . $row["book_author"] . '</td>
@@ -422,13 +429,14 @@ include '../header.php';
         						<a href="book.php?action=edit&code=' . convert_data($row["book_id"]) . '" class="btn btn-sm btn-primary">Edit</a>
         						<button type="button" name="delete_button" class="btn btn-danger btn-sm" onclick="delete_data(`' . $row["book_id"] . '`, `' . $row["book_status"] . '`)">Disable</button>
         					</td>
+        					
         				</tr>
         				';
 							}
 						} else {
 							echo '
         			<tr>
-        				<td colspan="10" class="text-center">No Data Found</td>
+        				<td colspan="11" class="text-center">No Data Found</td>
         			</tr>
         			';
 						}
@@ -455,9 +463,6 @@ include '../header.php';
 	?>
 </div>
 
-
 <?php
-
 include '../footer.php';
-
 ?>

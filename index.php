@@ -24,14 +24,24 @@ include 'header.php';
 			height: 100%;
 		}
 
-		.fa-solid{
+		.header-text {
+			background: linear-gradient(90deg, rgb(212, 175, 53), rgb(28, 74, 126));
+			background-clip: text;
+			color: transparent;
+			-webkit-text-stroke: 0.5px white;
+		}
+
+		.fa-solid {
 			font-size: 30px;
 		}
 	</style>
 </head>
 
 <div class="container">
-	<div class=" row align-items-md-stretch d-flex align-center my-md-5 py-md-5">
+	<header class="text-center header-text">
+		<h1 class="text-center">Accra Technical University <br> Library Management System</h1>
+	</header>
+	<div class=" row align-items-md-stretch d-flex align-center mb-md-5 pb-md-5">
 
 		<div class="col-md-6 my-md-5">
 

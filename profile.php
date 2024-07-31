@@ -149,9 +149,12 @@ include 'header.php';
 							</div>
 							<div class="col-md-8">
 								<h4><?php echo htmlspecialchars($result['user_name']); ?></h4>
-								<p>Email: <?php echo htmlspecialchars($result['user_email_address']); ?></p>
-								<p>Contact No: <?php echo htmlspecialchars($result['user_contact_no']); ?></p>
-								<p>Address: <?php echo nl2br(htmlspecialchars($result['user_address'])); ?></p>
+								<p><strong>Email</strong>: <?php echo htmlspecialchars($result['user_email_address']); ?></p>
+								<p><strong>Contact No</strong>: <?php echo htmlspecialchars($result['user_contact_no']); ?></p>
+								<p><strong>Address</strong>: <?php echo nl2br(htmlspecialchars($result['user_address'])); ?></p>
+								<p><strong>Faculty</strong>: <?php echo nl2br(htmlspecialchars($result['student_faculty'])); ?></p>
+								<p><strong>Department</strong>: <?php echo nl2br(htmlspecialchars($result['student_department'])); ?></p>
+								<p><strong>Program</strong>: <?php echo nl2br(htmlspecialchars($result['student_program'])); ?></p>
 							</div>
 						</div>
 					</div>

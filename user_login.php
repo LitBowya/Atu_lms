@@ -13,10 +13,10 @@ $message = '';
 if (isset($_POST["login_button"])) {
 	$formdata = [];
 
-	if (empty($_POST["student_id"])) {
-		$message .= '<li>Student ID is required</li>';
+	if (empty($_POST["user_name"])) {
+		$message .= '<li>Username is required</li>';
 	} else {
-		$formdata['student_id'] = trim($_POST['student_id']);
+		$formdata['user_name'] = trim($_POST['user_name']);
 	}
 
 	if (empty($_POST['user_password'])) {
@@ -25,13 +25,10 @@ if (isset($_POST["login_button"])) {
 		$formdata['user_password'] = trim($_POST['user_password']);
 	}
 
-
-	$message = '';
-
 	if ($message == '') {
 		// Prepare and execute the query to check for the user
-		$data = [':student_id' => $formdata['student_id']];
-		$query = "SELECT * FROM lms_user WHERE student_id = :student_id";
+		$data = [':user_name' => $formdata['user_name']];
+		$query = "SELECT * FROM lms_user WHERE user_name = :user_name";
 		$statement = $connect->prepare($query);
 		$statement->execute($data);
 
@@ -57,7 +54,7 @@ if (isset($_POST["login_button"])) {
 				}
 			}
 		} else {
-			$message = '<li>Invalid student ID or password</li>';
+			$message = '<li>Invalid username or password</li>';
 		}
 	}
 }
@@ -116,8 +113,8 @@ include 'header.php';
 						?>
 						<form method="POST">
 							<div class="mb-3">
-								<label class="form-label">Student ID</label>
-								<input type="text" name="student_id" id="student_id" class="form-control" />
+								<label class="form-label">Username</label>
+								<input type="text" name="user_name" id="user_name" class="form-control" />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Password</label>
@@ -128,7 +125,7 @@ include 'header.php';
 							</div>
 
 							<p class="text-center">
-								<a href="./user_registration.php">Do not own an account??</a>
+								<a href="./user_registration.php">Do not own an account?</a>
 							</p>
 						</form>
 					</div>
